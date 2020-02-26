@@ -11,13 +11,16 @@ namespace TicTacToe.Grid
         [SerializeField]
         private GridCell[] grid;
 
-        public bool CheckForWin()
+        public int CheckForWin()
         {
             for(int row =0; row<3; row++)
             {
                 if(((GridCell)(grid[(row*3)+0])).GetCellState()==((GridCell)grid[(row*3)+1]).GetCellState() && ((GridCell)grid[(row*3)+1]).GetCellState()==(grid[(row*3)+2]).GetCellState() && grid[(row*3)+1].GetCellState()!= CellState.EMPTY)
                 {
-                    return true;
+                    if(grid[(row*3)+0].GetCellState() == (CellState)GameplayService.Instance.GetCurrentState())
+                    {
+                        return 1;
+                    }
                 }
                 
             }
@@ -25,17 +28,29 @@ namespace TicTacToe.Grid
             {
                 if(grid[(0*3)+column].GetCellState()==grid[(1*3)+column].GetCellState() && grid[(1*3)+column].GetCellState()==grid[(2*3)+column].GetCellState() && grid[(2*3)+column].GetCellState()!= CellState.EMPTY)
                 {
-                    return true;
+                    if(grid[(0*3)+column].GetCellState() == (CellState)GameplayService.Instance.GetCurrentState())
+                    {
+                        return 1;
+                    }
                 } 
             }
             if((grid[0].GetCellState()==grid[4].GetCellState() && grid[4].GetCellState()==grid[8].GetCellState()) || (grid[2].GetCellState()==grid[4].GetCellState() && grid[4].GetCellState()==grid[6].GetCellState()))
             {
                 if(grid[4].GetCellState()!= CellState.EMPTY)
                 {
-                    return true;
+                    if(grid[4].GetCellState() == (CellState)GameplayService.Instance.GetCurrentState())
+                    {
+                        return 1;
+                    }
                 }
             }
-            return false;
+            if(!IsMovesLeft())
+            {
+                return 0;
+            }
+            else{
+                return -1;
+            }
         }
 
         private int EvaluateGrid()

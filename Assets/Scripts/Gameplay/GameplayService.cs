@@ -11,8 +11,17 @@ namespace TicTacToe.Gameplay{
         OSTATE = 0,
         XSTATE
     }
+
+    public enum GameResult
+    {
+        WON,
+        LOSE,
+        TIED
+    }
     public class GameplayService : GenericMonoSingleton<GameplayService>
     {
+        [SerializeField]
+        private GameOverPanel panelScript;
         private GameplayState gameplayState;
         private bool isAiTurn;
         private bool isAiMode;
@@ -21,7 +30,7 @@ namespace TicTacToe.Gameplay{
         {
             gameplayState = GameplayState.OSTATE;
             isAiTurn = false;
-            isAiMode = true;
+            isAiMode = PlayerPrefs.GetInt("AI_MODE") == 1 ? true : false;
         }
 
         public GameplayState GetCurrentState()
@@ -43,12 +52,29 @@ namespace TicTacToe.Gameplay{
 
         public void ToggleState()
         {
-            if(GridService.Instance.CheckForWin())
+            switch(GridService.Instance.CheckForWin())
             {
-                Debug.Log("win");
+                case 0:
+                panelScript.GameOver(true,"");
+                break;
+
+                case 1:
+                string wonChar = "X";
+                if(gameplayState == GameplayState.OSTATE)
+                {
+                    wonChar = "0";
+                }
+                panelScript.GameOver(false, wonChar);
+                break;
+
+                case -1:
+                ProceedToggleState();
+                break;
             }
-            else
-            {
+            
+        }
+        private void ProceedToggleState()
+        {
                 if(gameplayState == GameplayState.OSTATE)
                 {
                     gameplayState = GameplayState.XSTATE;
@@ -58,7 +84,7 @@ namespace TicTacToe.Gameplay{
                 }
                 if(isAiMode)
                 {
-                    isAiTurn = !isAiTurn;
+                    isAiTurn = !isAiTurn;   
                     if(isAiTurn)
                     {
                         GridService.Instance.MakeBestMove();
@@ -66,7 +92,6 @@ namespace TicTacToe.Gameplay{
                     }
                 }
             }
-        }
     }
 }
 
