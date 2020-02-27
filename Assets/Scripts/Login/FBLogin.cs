@@ -39,6 +39,11 @@ namespace TicTacToe.Login
             }
         }
 
+        public void ContinueAsGuest()
+        {
+            SceneManager.LoadScene("MenuScene");
+        }
+
 
         #region Login/Logout
         public void FacebookLogin()

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TicTacToe.Generics;
-using TicTacToe.Grid;
+using TicTacToe.Utilities;
 
 namespace TicTacToe.Gameplay
 {
@@ -12,6 +12,8 @@ namespace TicTacToe.Gameplay
         [SerializeField]
         private GameOverPanel panelScript;
 
+        private bool isInAiMode;
+
 
         private GameState currentState;
         private XState xState;
@@ -19,8 +21,8 @@ namespace TicTacToe.Gameplay
         
         void Start()
         {
-            bool isAiMode = PlayerPrefs.GetInt("AI_MODE") == 1 ? true : false;
-            if(isAiMode)
+            isInAiMode = PlayerPrefs.GetInt("AI_MODE") == 1 ? true : false;
+            if(isInAiMode)
             {
                 bool aiChooser = Random.value > 0.5f;
                 xState = new XState(aiChooser);
@@ -77,6 +79,14 @@ namespace TicTacToe.Gameplay
                 panelScript.GameOver(true,"");
             }
             else{
+                if(isInAiMode && !currentState.IsAiState())
+                {
+                    //when player wins agains AI, win history is added
+                    PlayerData data = DataSaver.LoadData();
+                    data.noOfWins += 1;
+                    DataSaver.SaveData(data);
+                }
+
                 string wonChar = "X";
                 if(GetCurrentState() == GameplayState.OSTATE)
                 {

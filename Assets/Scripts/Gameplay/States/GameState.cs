@@ -45,6 +45,11 @@ namespace TicTacToe.Gameplay
             }
         }
 
+        public bool IsAiState()
+        {
+            return isAI;
+        }
+
         public abstract GameplayState GetCurrentState();
     }
 }
