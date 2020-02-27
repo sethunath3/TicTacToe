@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using TicTacToe.Generics;
 using TicTacToe.Gameplay;
 
@@ -28,6 +26,7 @@ namespace TicTacToe.Grid
 
         private int EvaluateGrid()
         {
+            //Evaluation function for minmax
             for(int row =0; row<3; row++)
             {
                 if(((GridCell)(grid[(row*3)+0])).GetCellState()==((GridCell)grid[(row*3)+1]).GetCellState() && ((GridCell)grid[(row*3)+1]).GetCellState()==(grid[(row*3)+2]).GetCellState() && grid[(row*3)+1].GetCellState()!= CellState.EMPTY)
