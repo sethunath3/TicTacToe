@@ -8,9 +8,9 @@ namespace TicTacToe.Grid{
 
     public enum CellState
     {
-        EMPTY = 2,
+        EMPTY = 0,
         CROSS = 1,
-        CIRCLE = 0
+        CIRCLE = 2
     }
 
     public class GridCell : MonoBehaviour
@@ -23,7 +23,7 @@ namespace TicTacToe.Grid{
         [SerializeField]
         private Sprite OGrapic;
 
-        private CellState cellState;
+        public CellState cellState;
 
         private void Start()
         {

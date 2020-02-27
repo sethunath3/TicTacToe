@@ -13,36 +13,9 @@ namespace TicTacToe.Grid
 
         public int CheckForWin()
         {
-            for(int row =0; row<3; row++)
+            if(EvaluateGrid()==10 || EvaluateGrid() == -10)
             {
-                if(((GridCell)(grid[(row*3)+0])).GetCellState()==((GridCell)grid[(row*3)+1]).GetCellState() && ((GridCell)grid[(row*3)+1]).GetCellState()==(grid[(row*3)+2]).GetCellState() && grid[(row*3)+1].GetCellState()!= CellState.EMPTY)
-                {
-                    if(grid[(row*3)+0].GetCellState() == (CellState)GameplayService.Instance.GetCurrentState())
-                    {
-                        return 1;
-                    }
-                }
-                
-            }
-            for(int column = 0; column<3; column++)
-            {
-                if(grid[(0*3)+column].GetCellState()==grid[(1*3)+column].GetCellState() && grid[(1*3)+column].GetCellState()==grid[(2*3)+column].GetCellState() && grid[(2*3)+column].GetCellState()!= CellState.EMPTY)
-                {
-                    if(grid[(0*3)+column].GetCellState() == (CellState)GameplayService.Instance.GetCurrentState())
-                    {
-                        return 1;
-                    }
-                } 
-            }
-            if((grid[0].GetCellState()==grid[4].GetCellState() && grid[4].GetCellState()==grid[8].GetCellState()) || (grid[2].GetCellState()==grid[4].GetCellState() && grid[4].GetCellState()==grid[6].GetCellState()))
-            {
-                if(grid[4].GetCellState()!= CellState.EMPTY)
-                {
-                    if(grid[4].GetCellState() == (CellState)GameplayService.Instance.GetCurrentState())
-                    {
-                        return 1;
-                    }
-                }
+                return 1;
             }
             if(!IsMovesLeft())
             {
@@ -161,6 +134,8 @@ namespace TicTacToe.Grid
 
         public void MakeBestMove()
         {
+            //Finding the best possible move using minmax approach
+
             int bestMove = -1;
             int bestValue = -1000;
             for(int  i =0; i<9; i++)
@@ -178,7 +153,17 @@ namespace TicTacToe.Grid
                     }
                 }
             }
-            grid[bestMove].SetCellState(GameplayService.Instance.GetCurrentState());
+            if(bestMove == -1)
+            {
+                bestMove = 4;
+            }
+            SetCellToState(bestMove, GameplayService.Instance.GetCurrentState());
+        }
+
+        public void SetCellToState(int _cellindex, GameplayState _state)
+        {
+            grid[_cellindex].SetCellState(_state);
+            GameplayService.Instance.ToggleState();
         }
     }
 }

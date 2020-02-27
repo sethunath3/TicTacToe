@@ -4,43 +4,63 @@ using UnityEngine;
 using TicTacToe.Generics;
 using TicTacToe.Grid;
 
-namespace TicTacToe.Gameplay{
+namespace TicTacToe.Gameplay
+{
 
-    public enum GameplayState
-    {
-        OSTATE = 0,
-        XSTATE
-    }
-
-    public enum GameResult
-    {
-        WON,
-        LOSE,
-        TIED
-    }
     public class GameplayService : GenericMonoSingleton<GameplayService>
     {
         [SerializeField]
         private GameOverPanel panelScript;
-        private GameplayState gameplayState;
-        private bool isAiTurn;
-        private bool isAiMode;
+
+
+        private GameState currentState;
+        private XState xState;
+        private OState oState;
         
         void Start()
         {
-            gameplayState = GameplayState.OSTATE;
-            isAiTurn = false;
-            isAiMode = PlayerPrefs.GetInt("AI_MODE") == 1 ? true : false;
+            bool isAiMode = PlayerPrefs.GetInt("AI_MODE") == 1 ? true : false;
+            if(isAiMode)
+            {
+                bool aiChooser = Random.value > 0.5f;
+                xState = new XState(aiChooser);
+                oState = new OState(!aiChooser);
+            }
+            else{
+                xState = new XState(false);
+                oState = new OState(false);
+            }
+
+            currentState = xState;
+            ToggleState();
+        }
+
+        public void ToggleState()
+        {
+            if(currentState != null)
+            {
+                currentState.OnExitState();
+            }
+            
+            if(currentState.GetCurrentState()==GameplayState.OSTATE)
+            {
+                currentState = xState;
+            }
+            else{
+                currentState = oState;
+            }
+
+            currentState.OnEnterState();
         }
 
         public GameplayState GetCurrentState()
         {
-            return gameplayState;
+            return currentState.GetCurrentState();
         }
 
         public GameplayState GetNonActiveState()
         {
-            if(gameplayState == GameplayState.OSTATE)
+            if(currentState.GetCurrentState() == GameplayState.OSTATE)
             {
                 return GameplayState.XSTATE;
             }
@@ -50,48 +70,21 @@ namespace TicTacToe.Gameplay{
             }
         }
 
-        public void ToggleState()
+        public void GameOver(bool isATie, GameplayState winner)
         {
-            switch(GridService.Instance.CheckForWin())
+            if(isATie)
             {
-                case 0:
                 panelScript.GameOver(true,"");
-                break;
-
-                case 1:
+            }
+            else{
                 string wonChar = "X";
-                if(gameplayState == GameplayState.OSTATE)
+                if(GetCurrentState() == GameplayState.OSTATE)
                 {
                     wonChar = "0";
                 }
                 panelScript.GameOver(false, wonChar);
-                break;
-
-                case -1:
-                ProceedToggleState();
-                break;
             }
-            
         }
-        private void ProceedToggleState()
-        {
-                if(gameplayState == GameplayState.OSTATE)
-                {
-                    gameplayState = GameplayState.XSTATE;
-                }
-                else{
-                    gameplayState = GameplayState.OSTATE;
-                }
-                if(isAiMode)
-                {
-                    isAiTurn = !isAiTurn;   
-                    if(isAiTurn)
-                    {
-                        GridService.Instance.MakeBestMove();
-                        ToggleState();
-                    }
-                }
-            }
     }
 }
 
